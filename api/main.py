@@ -22,7 +22,7 @@ async def root():
 
 @app.get('/{firstParam}/{secondParam}/{thirdParam}')
 async def getCalculer(firstParam, secondParam, thirdParam):
-   
+   #kena khadamin f folder dial app lakhra
     # code parameters
     n0 = 2
     r = 5
@@ -41,7 +41,7 @@ async def getCalculer(firstParam, secondParam, thirdParam):
     ##################################### Testing functions ####################################
 
     # generate a random (n,r,w)-QC-MDPC matrix H
-    H = qcmdpc_core.genQCMDPC(n, r, w)
+    H = qcmdpc_core.genQCMDPC(int(firstParam), int(secondParam), int(thirdParam))
 
     # Generate the corresponding generator matrix G
     G = qcmdpc_core.genGenQCMDPC(H)
@@ -65,11 +65,11 @@ async def getCalculer(firstParam, secondParam, thirdParam):
 
 
     response = {
-        "genQCMDPC": H.tolist(),
-        "genGenQCMDPC": G.tolist(),
-        "clearText": m.tolist(),
-        "cipherText": y.tolist(),
-        "decryptedText": decryptedText.tolist(),
+        # "genQCMDPC": H.tolist(),
+        # "genGenQCMDPC": G.tolist(),
+        # "clearText": m.tolist(),
+        # "cipherText": y.tolist(),
+        # "decryptedText": decryptedText.tolist(),
         # "decrypt_status": decrypt_status
     }
     return response
