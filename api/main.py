@@ -65,11 +65,11 @@ async def getCalculer(firstParam, secondParam, thirdParam):
 
 
     response = {
-        # "genQCMDPC": H.tolist(),
-        # "genGenQCMDPC": G.tolist(),
-        # "clearText": m.tolist(),
-        # "cipherText": y.tolist(),
-        # "decryptedText": decryptedText.tolist(),
+        "genQCMDPC": H.tolist(),
+        "genGenQCMDPC": G.tolist(),
+        "clearText": m.tolist(),
+        "cipherText": y.tolist(),
+        "decryptedText": decryptedText.tolist(),
         # "decrypt_status": decrypt_status
     }
     return response
