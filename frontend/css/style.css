@@ -1,0 +1,22 @@
+.lastSectionFirstCol {
+  margin-top: 20px;
+}
+h5 {
+  text-align: center;
+}
+textarea {
+  height: 261px;
+}
+
+button:disabled {
+  opacity: 0.7;
+}
+button:disabled:hover {
+  color: #fff;
+  background-color: #33c3f0;
+  border-color: #33c3f0;
+}
+/* .resetButton {
+  background-color: lightseagreen !important;
+  border-color: lightskyblue !important;
+} */

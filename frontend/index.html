@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>Your page title here :)</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+  <!-- vue toast -->
+  <script src="https://cdn.jsdelivr.net/npm/vue-toast-notification"></script>
+  <link href="https://cdn.jsdelivr.net/npm/vue-toast-notification/dist/theme-sugar.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="container" id="app">
+    <div class="row">
+      <div class="one-half column" style="margin-top: 5%">
+        <h5>Les paramètres</h5>
+        <hr>
+        <!-- 3 INPUTS FOR THE PARAMS -->
+        <div class="row">
+          <div class="four columns">
+            <input class="u-full-width" type="text" v-model="firstParam" placeholder="Paramètre 1" id="param1">
+          </div>
+          <div class="four columns">
+            <input class="u-full-width" type="text" v-model="secondParam" placeholder="Paramètre 2" id="param2">
+          </div>
+          <div class="four columns">
+            <input class="u-full-width" type="text" v-model="thirdParam" placeholder="Paramètre 3" id="param3">
+          </div>
+        </div>
+        <!-- FULL WITH BUTTON TO CALCULATE -->
+        <button class="button-primary u-full-width" @click="calculer" :disabled="clearText != ''"><i class="fas fa-calculator"></i> Calculer </button>
+        <!-- CLEAR & CIPHER TEXT SECTION -->
+        <div class="row lastSectionFirstCol">
+          <div class="four columns">
+            <strong>
+              <p>Texte en clair</p>
+            </strong>
+          </div>
+          <div class="eight columns">
+            <input class="u-full-width" type="text" v-model="clearText" placeholder="Texte en clair" disabled>
+          </div>
+        </div>
+        <div class="row lastSectionFirstCol">
+          <div class="four columns">
+            <strong>
+              <p>Texte chiffré</p>
+            </strong>
+          </div>
+          <div class="eight columns">
+            <input v-if="showCipheredText" class="u-full-width" type="text" placeholder="chiffré" :value="cipherText"
+              disabled>
+            <input v-else class="u-full-width" type="text" placeholder="chiffré" disabled>
+          </div>
+        </div>
+        <div class="row lastSectionFirstCol">
+          <div class="four columns">
+            <strong>
+              <p>Texte déchiffré</p>
+            </strong>
+          </div>
+          <div class="eight columns">
+            <input v-if="showDecipheredText" class="u-full-width" type="text" :value="decryptedText"
+              placeholder="dechiffré" disabled>
+            <input v-else class="u-full-width" type="text" value="" placeholder="dechiffré" disabled>
+          </div>
+        </div>
+      </div>
+      <!-- Second section of the page -->
+      <div class="one-half column" style="margin-top: 5%">
+        <h5>Les clés</h5>
+        <hr>
+        <div class="row">
+          <div class="six columns">
+            <button @click="showDecipheredTextMethod" class="button-primary u-full-width"
+              :disabled="genQCMDPC == null && genGenQCMDPC == null || showDecipheredText=== true || disablePrivateKeyWhenCalculatedIsClicked"><i class="fas fa-lock"></i> Clé
+              privé</button>
+            <textarea disabled class="u-full-width" placeholder="Clé privé" id="private_key">{{ genQCMDPC }}
+            </textarea>
+          </div>
+          <div class="six columns">
+            <button @click="showPublicKey" class="button-primary u-full-width"
+              :disabled="genQCMDPC == null && genGenQCMDPC == null || showCipheredText === true"><i class="fas fa-unlock"></i> 
+              Clé publique
+            </button>
+            <textarea disabled class="u-full-width" placeholder="Clé publique" rows="1" cols="1" id="pub_key">{{ genGenQCMDPC }}
+            </textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- retry -->
+    <div class="row" v-if="showResetButton">
+      <div class="four columns" style="margin-top: 5%">
+      </div>
+      <div class="four columns" style="margin-top: 5%">
+        <button class="button-primary u-full-width resetButton" @click="reset"><i class="far fa-window-restore"></i> Réinitialiser</button>
+      </div>
+      <div class="four columns" style="margin-top: 5%">
+      </div>
+    </div>
+  </div>
+  <!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    Vue.use(VueToast);
+  </script>
+  <script>
+
+    new Vue({
+      el: '#app',
+      data() {
+        return {
+          firstParam: 10,
+          secondParam: 5,
+          thirdParam: 6,
+          genQCMDPC: null,
+          genGenQCMDPC: null,
+          clearText: '',
+          cipherText: '',
+          decryptedText: '',
+          showCipheredText: false,
+          showDecipheredText: false,
+          disablePrivateKeyWhenCalculatedIsClicked: false,
+          showResetButton: false,
+        }
+      },
+      methods: {
+        calculer() {
+          axios.get(`http://127.0.0.1:8000/${this.firstParam}/${this.secondParam}/${this.thirdParam}`)
+            .then(response => {
+              const data = response.data;
+              let toReturn = ""
+
+              //setting the clear text
+              this.clearText = data.clearText;
+
+              //generating genQCMDPC matrix
+              toReturn += "[[ "
+              data.genQCMDPC.forEach((element, index) => {
+                toReturn += element.toString()
+                data.genQCMDPC.length === index + 1 ? '' : toReturn += "\n"
+              });
+              toReturn += " ]]"
+              this.genQCMDPC = toReturn;
+
+              //generating genGenQCMDPC matrix
+              toReturn = ""
+              toReturn += "[[ "
+              data.genGenQCMDPC.forEach((element, index) => {
+                toReturn += element.toString()
+                data.genGenQCMDPC.length === index + 1 ? '' : toReturn += "\n"
+              });
+              toReturn += " ]]"
+              this.genGenQCMDPC = toReturn;
+
+              //cipher text
+              this.cipherText = data.cipherText
+
+              //decipher text
+              this.decryptedText = data.decryptedText
+
+
+              this.disablePrivateKeyWhenCalculatedIsClicked = true
+
+              //show toast
+              Vue.$toast.open({
+                message: '<strong>les clés privées et publiques et le texte en clair sont calculés</strong>',
+                duration: 6000,
+                type: 'success',
+                dismissible: true,
+              });
+            })
+            .catch(err => {
+              Vue.$toast.open({
+                message: 'Une erreur est survenue',
+                duration: 6000,
+                type: 'error',
+                dismissible: true,
+              });
+            })
+        },
+        showPublicKey() {
+          this.disablePrivateKeyWhenCalculatedIsClicked = !this.disablePrivateKeyWhenCalculatedIsClicked;
+          this.showCipheredText = true;
+          Vue.$toast.open({
+            message: '<strong>Le texte a été chiffré avec succès</strong>',
+            duration: 6000,
+            type: 'info',
+            dismissible: true,
+          });
+        },
+        showDecipheredTextMethod() {
+          this.showResetButton = true;
+          this.showDecipheredText = true;
+          Vue.$toast.open({
+            message: '<strong>Le texte a été déchiffré avec succès</strong>',
+            duration: 6000,
+            type: 'info',
+            dismissible: true,
+          });
+        },
+        reset() {
+          this.firstParam = 10;
+          this.secondParam = 5;
+          this.thirdParam = 6;
+          this.genQCMDPC = null;
+          this.genGenQCMDPC = null;
+          this.clearText = '';
+          this.cipherText = '';
+          this.decryptedText = '';
+          this.showCipheredText = false;
+          this.showDecipheredText = false;
+          this.disablePrivateKeyWhenCalculatedIsClicked = false;
+          this.showResetButton = false;
+          Vue.$toast.open({
+            message: '<strong>Les données ont été restaurées avec succès</strong>',
+            duration: 6000,
+            type: 'warning',
+            dismissible: true,
+          });
+        }
+      }
+    })
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" integrity="sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" integrity="sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</body>
+
+</html>
