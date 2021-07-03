@@ -22,37 +22,37 @@ async def root():
 
 @app.get('/{firstParam}/{secondParam}/{thirdParam}')
 async def getCalculer(firstParam, secondParam, thirdParam):
-   #kena khadamin f folder dial app lakhra
     # code parameters
     n0 = 2
-    r = 5
+    #r = 5
     wi = 3
 
     N = 20
-    k = r // 2
+    k = int(secondParam) // 2
     #decryption parameters
     t = 1
 
     ################################## Processing parameters ###################################
 
-    n = n0 * r
+    #n = n0 * r
     w = wi * n0
 
     ##################################### Testing functions ####################################
 
+    print("firstParam:\n", firstParam)
     # generate a random (n,r,w)-QC-MDPC matrix H
-    H = qcmdpc_core.genQCMDPC(int(firstParam), int(secondParam), int(thirdParam))
-
+    H = qcmdpc_core.genQCMDPC(int(firstParam), int(secondParam), w)
+    print("H:\n", H)
     # Generate the corresponding generator matrix G
     G = qcmdpc_core.genGenQCMDPC(H)
     print("G:\n", G)
     # generate a random message m of weight k
-    m = qcmdpc_core.genRandomVector(r, k)
+    m = qcmdpc_core.genRandomVector(int(secondParam), k)
 
     print("\Texte en clair m:", m)
 
     # generate a random error vector e of weight t
-    e = qcmdpc_core.genRandomVector(n, t)
+    e = qcmdpc_core.genRandomVector(int(firstParam), t)
 
     # encrypt the message m
     y = qcmdpc_core.encryptMcEliece(G, m, e)

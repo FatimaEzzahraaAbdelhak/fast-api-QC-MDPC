@@ -131,6 +131,7 @@ def genGenQCMDPC(H):
 
     #extraire les polynômes générateurs pour h_ {n_0-1} de H
     lastPoly = H[0, n - r : n]
+    print(lastPoly)
 
     #calculer le polynôme générateur de l'inverse de h_ {n_0-1}
     invLastPoly = genInvPoly(lastPoly)
